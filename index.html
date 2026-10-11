@@ -1,0 +1,157 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Meus Aportes</title><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#0f3d2a">
+<link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0e1a14;--forest:#0f3d2a;--em:#16a34a;--gold:#b8924a;--ivory:#f6f4ee;--line:rgba(15,61,42,.1);--mut:#7a7a6e;--red:#c2410c}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:Manrope,system-ui,sans-serif;background:var(--ivory);color:var(--ink);font-variant-numeric:tabular-nums;padding:env(safe-area-inset-top) 0 calc(76px + env(safe-area-inset-bottom))}
+header{padding:18px 18px 8px}h1{margin:0;font-size:22px;letter-spacing:-.03em}
+.sub{font-size:12px;color:var(--mut);margin-top:2px}
+main{padding:8px 14px;max-width:640px;margin:auto}
+.card{background:linear-gradient(180deg,#fff,#fdfcf9);border:1px solid var(--line);border-radius:20px;padding:14px;margin:10px 0;box-shadow:0 12px 30px -14px rgba(14,26,20,.16)}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.lbl{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);font-weight:700}
+.big{font-size:26px;font-weight:800;letter-spacing:-.03em}
+input,select{width:100%;font:inherit;padding:11px 12px;border:1px solid rgba(15,61,42,.16);border-radius:12px;background:#fff;color:var(--ink)}
+input:focus,select:focus{outline:none;border-color:var(--em);box-shadow:0 0 0 4px rgba(22,163,74,.14)}
+button{font:inherit;font-weight:700;border:0;border-radius:14px;padding:12px 16px;color:#fff;background:linear-gradient(135deg,#123f2c,#0b2a1d);box-shadow:0 6px 16px -6px rgba(11,42,29,.55);border:1px solid rgba(184,146,74,.4)}
+button:active{transform:scale(.97)}button.g{background:#fff;color:var(--forest);box-shadow:none;border:1px solid var(--line)}button.sm{padding:7px 10px;font-size:12px;border-radius:10px}
+button.w{width:100%}.x{background:none;border:0;box-shadow:none;color:var(--red);padding:4px 8px;font-size:18px}
+.buy{border-left:4px solid var(--em)}.tk{font-weight:800;font-size:16px}.mut{color:var(--mut);font-size:12px}.up{color:var(--em)}.dn{color:var(--red)}
+.bar{height:6px;border-radius:9px;background:rgba(15,61,42,.1);margin-top:8px;overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--em),var(--gold))}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.tabs{position:fixed;bottom:0;left:0;right:0;display:flex;background:rgba(246,244,238,.9);backdrop-filter:blur(18px);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
+.tabs button{flex:1;min-width:0;background:none;border:0;box-shadow:none;color:var(--mut);padding:10px 0;font-size:12px}.tabs button.on{color:var(--forest)}.tabs button.on b{display:block;height:3px;width:22px;margin:4px auto 0;border-radius:3px;background:var(--gold)}
+.tabs span{font-size:18px;display:block}.status{font-size:11px;color:var(--mut);padding:0 4px}
+.pct{width:78px;text-align:right}.ok{color:var(--em);font-weight:700}.bad{color:var(--red);font-weight:700}
+</style></head><body>
+<header><h1>Meus Aportes</h1><div class="sub" id="st">carregando…</div></header>
+<main id="app"></main>
+<nav class="tabs" id="tabs"></nav>
+<script>
+const SEED=[["IMAB11",102,114.47,119.6],["B5P211",81,110.04,112.94],["DIVO11",70,124.02,130.83],["CDIB11",172,51.29,52.37],["SPXB11",92,75.38,75.5],["IDKA11",96,60.46,62.14],["GXUS11",37,113.75,113.32],["HASH11",67,42.69,57.01],["GPOS11",9,25.1,25.38]];
+const K="meusaportes_v1";
+let S;try{S=JSON.parse(localStorage.getItem(K))}catch{}
+if(!S)S={assets:SEED.map(([t,q,pm,price])=>({t,q,pm,price,pct:+(100/SEED.length).toFixed(2)})),ops:[],aporte:1000,token:"",upd:null,plan:null};
+S.res=S.res||{saldo:0,pct:100,cdi:14.9,auto:false,gasto:3000,meses:6,aporteMes:500,ir:15,movs:[]};
+let tab="apt";
+const $=s=>document.querySelector(s),R=n=>n.toLocaleString("pt-BR",{style:"currency",currency:"BRL"}),N=(n,d=2)=>n.toLocaleString("pt-BR",{minimumFractionDigits:d,maximumFractionDigits:d});
+const save=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch{}};
+const total=()=>S.assets.reduce((a,x)=>a+x.q*x.price,0);
+const dayD=()=>{let d=0,b=0;S.assets.forEach(a=>{if(a.close>0){d+=a.q*(a.price-a.close);b+=a.q*a.close}});return{d,p:b?d/b*100:0,has:S.assets.some(a=>a.close>0)}};
+const cost=()=>S.assets.reduce((a,x)=>a+x.q*x.pm,0);
+const resLine=()=>{const c=cost(),t=total(),d=t-c;return`<div class="row" style="margin-top:6px"><span class="mut">Investido (custo)</span><b>${R(c)}</b></div><div class="row"><span class="mut">Resultado</span><b class="${d>=0?"up":"dn"}">${d>=0?"+":""}${R(d)} (${N(c?d/c*100:0)}%)</b></div>`};
+const sumPct=()=>S.assets.reduce((a,x)=>a+(+x.pct||0),0);
+function suggest(cash){
+  const T=total()+cash,pos=S.assets.filter(a=>a.price>0).map(a=>({a,gap:T*(a.pct/100)-a.q*a.price,n:0}));
+  let left=cash;
+  for(;;){const c=pos.filter(p=>p.gap>0&&p.a.price<=left).sort((x,y)=>y.gap-x.gap)[0];if(!c)break;c.n++;c.gap-=c.a.price;left-=c.a.price}
+  return{items:pos.filter(p=>p.n>0).map(p=>({t:p.a.t,n:p.n,p:p.a.price,v:p.n*p.a.price})),left,T};
+}
+function applyOp(t,side,q,p,date){
+  const a=S.assets.find(x=>x.t===t);if(!a)return;
+  if(side==="C"){a.pm=+((a.q*a.pm+q*p)/(a.q+q)).toFixed(4);a.q+=q}else a.q=Math.max(0,a.q-q);
+  S.ops.unshift({id:Date.now()+Math.random(),d:date||new Date().toISOString(),t,s:side,q,p});
+}
+async function quotes(manual){
+  if(!S.token){if(manual){const t=prompt("Cole seu token gratuito da brapi.dev (crie conta em brapi.dev):");if(t){S.token=t.trim();save()}else return}else return}
+  $("#st").textContent="buscando cotações…";let ok=0,bad=0;
+  await Promise.all(S.assets.map(async a=>{try{const r=await fetch("https://brapi.dev/api/quote/"+a.t+"?token="+encodeURIComponent(S.token));if(r.status==401||r.status==403){bad=1;return}const d=await r.json(),q0=d.results?.[0],p=q0?.regularMarketPrice;if(p>0){a.price=+p.toFixed(2);const c=q0.regularMarketPreviousClose;a.close=c>0?+(+c).toFixed(2):null;ok++}}catch{}}));
+  if(bad){S.token="";}
+  if(ok)S.upd=new Date().toISOString();save();render();
+  if(bad)$("#st").textContent="Token inválido — toque em Atualizar para informar outro";
+}
+function head(){const u=S.upd?new Date(S.upd).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}):null;$("#st").textContent=u?`Cotações às ${u} • atraso da B3 ~15 min`:"Cotações de exemplo • toque em Atualizar"}
+function tabsUI(){$("#tabs").innerHTML=[["apt","🎯","Aportar"],["car","💼","Carteira"],["res","🛡️","Reserva"],["his","🧾","Histórico"],["aju","❓","Ajuda"]].map(([k,i,l])=>`<button class="${tab===k?"on":""}" onclick="tab='${k}';render()"><span>${i}</span>${l}${tab===k?"<b></b>":""}</button>`).join("")}
+function vApt(){
+  const cash=+S.aporte||0,pl=S.plan,T=total();
+  let h=`<div class="card"><div class="lbl">Patrimônio atual</div><div class="big">${R(T)}</div>${(()=>{const x=dayD();return x.has?`<div class="${x.d>=0?"up":"dn"}" style="font-weight:700;font-size:13px">${x.d>=0?"▲ +":"▼ "}${R(x.d)} (${N(x.p)}%) vs. fechamento anterior</div>`:""})()}
+  ${resLine()}
+  <div class="lbl" style="margin-top:12px">Quanto vou aportar (R$)</div><input id="ap" type="number" inputmode="decimal" value="${S.aporte}" oninput="S.aporte=this.value;S.plan=null;save()">
+  <div class="grid" style="margin-top:10px"><button class="g" onclick="quotes(true)">⟳ Atualizar cotações</button><button onclick="S.plan=suggest(+S.aporte||0);save();render()">Calcular compras</button></div></div>`;
+  if(Math.abs(sumPct()-100)>.05)h+=`<div class="card bad">Seus % alvo somam ${N(sumPct())}%. Ajuste na aba Carteira.</div>`;
+  if(pl){
+    if(!pl.items.length)h+=`<div class="card">Com esse valor não dá para comprar nenhuma cota sem fugir do alvo.</div>`;
+    else{h+=pl.items.map((i,k)=>`<div class="card buy"><div class="row"><div><div class="tk">Comprar ${i.n} × ${i.t}</div><div class="mut">${i.n} cota(s) a ${R(i.p)}</div></div><div class="tk">${R(i.v)}</div></div><button class="g w sm" style="margin-top:10px" onclick="regOne(${k})">✓ Comprei este (editar qtd/preço)</button></div>`).join("");
+    h+=`<div class="card"><div class="row"><span class="mut">Total das compras</span><b>${R(pl.items.reduce((a,i)=>a+i.v,0))}</b></div><div class="row"><span class="mut">Sobra</span><b>${R(pl.left)}</b></div>
+    <button class="w" style="margin-top:12px" onclick="regPlan()">✓ Já comprei — registrar operações</button></div>`}
+  }
+  return h;
+}
+function regOne(k){const i=S.plan.items[k],q=parseInt(prompt("Quantas cotas de "+i.t+" você comprou?",i.n)),p=parseFloat(String(prompt("Preço pago por cota (R$)?",i.p)).replace(",","."));if(!(q>0)||!(p>0))return;applyOp(i.t,"C",q,p);S.plan.items.splice(k,1);save();render()}
+function regPlan(){if(!S.plan||!confirm("Registrar estas compras na carteira e no histórico?"))return;S.plan.items.forEach(i=>applyOp(i.t,"C",i.n,i.p));S.plan=null;save();tab="his";render()}
+function vCar(){
+  const T=total();
+  let h=`<div class="card"><div class="row"><span class="lbl">Patrimônio atual</span><b>${R(T)}</b></div>${resLine()}<div class="row" style="margin-top:10px"><span class="lbl">% alvo total</span><span class="${Math.abs(sumPct()-100)<.05?"ok":"bad"}">${N(sumPct())}%</span></div>
+  <button class="g w sm" style="margin-top:10px" onclick="S.assets.forEach(a=>a.pct=+(100/S.assets.length).toFixed(2));S.plan=null;save();render()">Dividir igualmente</button></div>`;
+  h+=S.assets.map((a,i)=>{const v=a.q*a.price,cur=T?v/T*100:0,rent=a.pm?(a.price/a.pm-1)*100:0;
+    return`<div class="card"><div class="row"><div><div class="tk">${a.t}</div><div class="mut">${a.q} cotas • PM ${R(a.pm)} • hoje ${R(a.price)}</div><div class="mut">Investido ${R(a.q*a.pm)}</div></div>
+    <div style="text-align:right"><div class="mut">Atual</div><b>${R(v)}</b><div class="${rent>=0?"up":"dn"} mut">${rent>=0?"+":""}${N(rent)}% no total</div>${a.close>0?`<div class="mut ${a.price>=a.close?"up":"dn"}">${a.price>=a.close?"▲":"▼"} ${N((a.price/a.close-1)*100)}% hoje</div>`:""}</div></div>
+    <div class="bar"><i style="width:${Math.min(100,cur)}%"></i></div>
+    <div class="row" style="margin-top:8px"><span class="mut">Atual ${N(cur)}% → alvo</span><span><input class="pct" type="number" inputmode="decimal" step="0.01" value="${a.pct}" onchange="S.assets[${i}].pct=+this.value;S.plan=null;save();render()"> %
+    <button class="x" onclick="delA(${i})">🗑</button></span></div></div>`}).join("");
+  h+=`<div class="card"><div class="lbl">Adicionar ativo</div><div class="grid" style="margin-top:8px"><input id="nt" placeholder="Ticker (ex: BOVA11)"><input id="nq" type="number" inputmode="numeric" placeholder="Quantidade"><input id="np" type="number" inputmode="decimal" placeholder="Preço médio R$"><input id="ng" type="number" inputmode="decimal" placeholder="% alvo"></div><button class="w" style="margin-top:10px" onclick="addA()">Adicionar</button></div>
+  <div class="card"><div class="lbl">Dados</div><div class="grid" style="margin-top:8px"><button class="g" onclick="exp()">Exportar backup</button><button class="g" onclick="$('#imp').click()">Importar backup</button></div><input id="imp" type="file" accept=".json" hidden onchange="imp(this)">
+  <button class="g w sm" style="margin-top:8px" onclick="S.token='';save();quotes(true)">Trocar token brapi</button></div>`;
+  return h;
+}
+function delA(i){if(confirm("Remover "+S.assets[i].t+" da carteira?")){S.assets.splice(i,1);S.plan=null;save();render()}}
+function addA(){const t=$("#nt").value.trim().toUpperCase(),q=+$("#nq").value,p=+$("#np").value,g=+$("#ng").value||0;if(!t||!(q>=0)||!(p>0))return alert("Preencha ticker, quantidade e preço médio.");if(S.assets.some(a=>a.t===t))return alert("Esse ativo já existe.");S.assets.push({t,q,pm:p,price:p,pct:g});S.plan=null;save();render();quotes(false)}
+function vHis(){
+  let h=`<div class="card"><div class="lbl">Registrar operação manual</div><div class="grid" style="margin-top:8px"><select id="ot">${S.assets.map(a=>`<option>${a.t}</option>`).join("")}</select><select id="os"><option value="C">Compra</option><option value="V">Venda</option></select><input id="oq" type="number" inputmode="numeric" placeholder="Quantidade"><input id="op" type="number" inputmode="decimal" placeholder="Preço R$"></div><button class="w" style="margin-top:10px" onclick="manual()">Registrar</button></div>`;
+  h+=S.ops.length?S.ops.slice(0,100).map(o=>`<div class="card"><div class="row"><div><div class="tk ${o.s==="C"?"up":"dn"}">${o.s==="C"?"Compra":"Venda"} ${o.q} × ${o.t}</div><div class="mut">${new Date(o.d).toLocaleString("pt-BR",{dateStyle:"short",timeStyle:"short"})} • ${R(o.p)}/cota</div></div><b>${R(o.q*o.p)}</b></div></div>`).join(""):`<div class="card mut">Nenhuma operação ainda. Cada compra registrada fica salva aqui.</div>`;
+  return h+`<div class="status">Excluir um item do histórico não altera a quantidade na carteira.</div>`;
+}
+function manual(){const q=+$("#oq").value,p=+$("#op").value;if(!(q>0)||!(p>0))return alert("Informe quantidade e preço.");applyOp($("#ot").value,$("#os").value,q,p);S.plan=null;save();render()}
+function exp(){const b=new Blob([JSON.stringify(S,null,1)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="meus-aportes-backup.json";a.click()}
+function imp(el){const f=el.files[0];if(!f)return;f.text().then(t=>{try{const d=JSON.parse(t);if(!d.assets)throw 0;S=d;save();render()}catch{alert("Arquivo inválido.")}})}
+
+async function cdiAuto(){try{const r=await fetch("https://api.bcb.gov.br/dados/serie/bcdata.sgs.4389/dados/ultimos/1?formato=json"),d=await r.json(),v=parseFloat(d[0].valor);if(v>0){S.res.cdi=v;S.res.auto=true;save();if(tab==="res")render()}}catch{}}
+function resCalc(){const r=S.res,ann=(+r.cdi||0)/100*(+r.pct||0)/100,m=Math.pow(1+ann,1/12)-1,liq=m*(1-(+r.ir||0)/100),meta=(+r.gasto||0)*(+r.meses||0);
+  let sal=+r.saldo||0,n=0;while(sal<meta&&n<600&&((+r.aporteMes||0)>0||liq>0)){sal=sal*(1+liq)+(+r.aporteMes||0);n++}
+  return{m,liq,meta,n:sal>=meta?n:null}}
+function vRes(){
+  const r=S.res,c=resCalc(),sal=+r.saldo||0,prog=c.meta?Math.min(100,sal/c.meta*100):0;
+  let h=`<div class="card"><div class="lbl">Reserva de emergência</div><div class="big">${R(sal)}</div>
+  <div class="bar"><i style="width:${prog}%"></i></div>
+  <div class="row" style="margin-top:6px"><span class="mut">Meta ${R(c.meta)} (${r.meses} meses)</span><b>${N(prog,1)}%</b></div>
+  <div class="mut" style="margin-top:6px">${sal>=c.meta&&c.meta>0?"🎉 Meta atingida!":c.n!==null?`Com ${R(+r.aporteMes||0)}/mês, você chega à meta em ~${c.n} meses`:"Defina o aporte mensal para projetar"}</div></div>
+  <div class="card"><div class="lbl">Rendimento estimado (CDI)</div>
+  <div class="row" style="margin-top:6px"><span class="mut">Bruto no mês</span><b class="up">+${R(sal*c.m)}</b></div>
+  <div class="row"><span class="mut">Líquido (IR ${r.ir}%)</span><b class="up">+${R(sal*c.liq)}</b></div>
+  <button class="g w sm" style="margin-top:10px" onclick="movR('R',${(sal*c.liq).toFixed(2)})">Lançar rendimento líquido estimado</button></div>
+  <div class="card"><div class="lbl">Movimentar</div><input id="rv" type="number" inputmode="decimal" placeholder="Valor R$" style="margin-top:8px">
+  <div class="grid" style="margin-top:8px"><button onclick="movR('D')">+ Depósito</button><button class="g" onclick="movR('S')">− Resgate</button></div></div>
+  <div class="card"><div class="lbl">Configurações</div><div class="grid" style="margin-top:8px">
+  <div><div class="mut">CDI a.a. (%)</div><input type="number" inputmode="decimal" step="0.01" value="${r.cdi}" onchange="S.res.cdi=+this.value;S.res.auto=false;save();render()"></div>
+  <div><div class="mut">Rende (% do CDI)</div><input type="number" inputmode="decimal" value="${r.pct}" onchange="S.res.pct=+this.value;save();render()"></div>
+  <div><div class="mut">Gasto mensal R$</div><input type="number" inputmode="decimal" value="${r.gasto}" onchange="S.res.gasto=+this.value;save();render()"></div>
+  <div><div class="mut">Meses de reserva</div><input type="number" inputmode="numeric" value="${r.meses}" onchange="S.res.meses=+this.value;save();render()"></div>
+  <div><div class="mut">Aporte mensal R$</div><input type="number" inputmode="decimal" value="${r.aporteMes}" onchange="S.res.aporteMes=+this.value;save();render()"></div>
+  <div><div class="mut">IR (%)</div><input type="number" inputmode="decimal" value="${r.ir}" onchange="S.res.ir=+this.value;save();render()"></div></div>
+  <div class="status" style="margin-top:8px">${r.auto?"CDI atualizado automaticamente (Banco Central).":"CDI informado manualmente — confira o valor atual."} IR do CDB/Tesouro: 22,5% até 180 dias, 20% até 360, 17,5% até 720 e 15% depois; use 0 para LCI/LCA e poupança-like isentas.</div></div>`;
+  h+=(r.movs.length?r.movs.slice(0,50).map(m=>`<div class="card"><div class="row"><div><div class="tk ${m.t==="S"?"dn":"up"}">${{D:"Depósito",S:"Resgate",R:"Rendimento"}[m.t]}</div><div class="mut">${new Date(m.d).toLocaleString("pt-BR",{dateStyle:"short",timeStyle:"short"})}</div></div><b>${R(m.v)}</b></div></div>`).join(""):`<div class="card mut">Nenhuma movimentação ainda. Comece lançando o saldo atual como depósito.</div>`);
+  return h}
+function movR(t,v){v=v??+$("#rv")?.value;if(!(v>0))return alert("Informe um valor.");const r=S.res;r.saldo=+((+r.saldo||0)+(t==="S"?-v:v)).toFixed(2);if(r.saldo<0)r.saldo=0;r.movs.unshift({d:new Date().toISOString(),t,v});save();render()}
+const ph=(n,url,title,btn,menu,hi)=>{let m="";if(menu)m=`<rect x="92" y="38" width="118" height="${menu.length*22+10}" rx="8" fill="#fff" stroke="#bbb"/>`+menu.map((x,i)=>`<rect x="96" y="${43+i*22}" width="110" height="20" rx="5" fill="${i===hi?"#fde8b0":"none"}" stroke="${i===hi?"#b8924a":"none"}" stroke-width="2"/><text x="102" y="${57+i*22}" font-size="10" fill="#222">${x}</text>`).join("");
+  return`<svg viewBox="0 0 220 280" style="width:100%;max-width:230px;display:block;margin:auto"><rect x="6" y="4" width="208" height="272" rx="22" fill="#fff" stroke="#0f3d2a" stroke-width="3"/><rect x="16" y="14" width="164" height="18" rx="9" fill="#eee"/><text x="26" y="27" font-size="9" fill="#555">${url}</text><text x="196" y="29" font-size="16" fill="#0f3d2a" text-anchor="middle" ${menu?'stroke="#b8924a" stroke-width="0.6"':''}>⋮</text>
+  <text x="110" y="${menu?150:90}" font-size="13" font-weight="800" fill="#0e1a14" text-anchor="middle">${title}</text>${[0,1,2].map(i=>`<rect x="40" y="${(menu?166:106)+i*14}" width="${140-i*20}" height="7" rx="3" fill="#e6e6e0"/>`).join("")}
+  ${btn?`<rect x="45" y="214" width="130" height="30" rx="10" fill="#16a34a" stroke="#b8924a" stroke-width="3"/><text x="110" y="234" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">${btn}</text>`:""}${m}
+  <circle cx="22" cy="258" r="10" fill="#b8924a"/><text x="22" y="262" font-size="12" font-weight="800" fill="#fff" text-anchor="middle">${n}</text></svg>`};
+const stp=(svg,t,d)=>`<div class="card">${svg}<div class="tk" style="margin-top:8px">${t}</div><div class="mut" style="margin-top:2px">${d}</div></div>`;
+function vAju(){return`<div class="card"><div class="lbl">Guia ilustrado</div><div class="mut" style="margin-top:4px">Ilustrações aproximadas: os nomes dos botões podem variar um pouco conforme o site e o celular.</div></div>
+<div class="card"><div class="tk">📲 Instalar o app no celular</div></div>`+
+stp(ph(1,"https://seu-app.netlify.app","Meus Aportes",null,null),"Abra o link no Chrome","Primeiro o app precisa estar hospedado (ex.: Netlify Drop, arrastando a pasta). Abra o endereço dele no Chrome do celular.")+
+stp(ph(2,"https://seu-app.netlify.app","Meus Aportes",null,["Nova guia","Histórico","Instalar app","Compartilhar"],2),"Toque nos 3 pontinhos ⋮","No canto superior direito do Chrome, escolha “Instalar app” (ou “Adicionar à tela inicial”).")+
+stp(ph(3,"https://seu-app.netlify.app","Instalar app?","Instalar",null),"Confirme em “Instalar”","O ícone verde “A” aparece na tela inicial e o app abre em tela cheia, sem barra do navegador.")+
+`<div class="card"><div class="tk">🔑 Cadastrar na brapi.dev (cotações)</div></div>`+
+stp(ph(1,"brapi.dev","brapi.dev","Criar conta",null),"Abra brapi.dev e crie sua conta","Toque no botão de cadastro (“Criar conta” / “Começar”). Pode usar e-mail ou login social, e o plano gratuito basta.")+
+stp(ph(2,"brapi.dev/dashboard","Seu painel","Copiar token",null),"Copie o seu token","Depois de entrar, abra o painel (Dashboard). Lá fica o seu token de acesso: toque nele para copiar.")+
+stp(ph(3,"Meus Aportes","Aportar","⟳ Atualizar cotações",null),"Cole no app","Na aba Aportar, toque em “Atualizar cotações”, cole o token quando pedir e confirme. Ele fica salvo no aparelho.")+
+`<div class="status">Nunca compartilhe seu token com outras pessoas.</div>`}
+function render(){const keep=document.activeElement?.id;$("#app").innerHTML=({apt:vApt,car:vCar,res:vRes,his:vHis,aju:vAju})[tab]();tabsUI();head();window.scrollTo(0,0)}
+try{navigator.storage?.persist?.()}catch{}
+render();quotes(false);cdiAuto();setInterval(()=>{if(!document.hidden)quotes(false)},60000);
+if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
+</script></body></html>
